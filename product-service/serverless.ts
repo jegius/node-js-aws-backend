@@ -43,7 +43,7 @@ const serverlessConfiguration: Serverless = {
             events: [
                 {
                     http: {
-                        method: 'post',
+                        method: 'put',
                         path: 'products/available',
                         cors: true,
                     }

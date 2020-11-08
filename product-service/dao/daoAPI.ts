@@ -7,6 +7,14 @@ export interface Dao <T> {
     add(item: T): Promise<Array<T>>;
 }
 
+export const emptyProduct = {
+    count: 0,
+    description: '',
+    price: 0,
+    title: '',
+    imageUrl: ''
+}
+
 export interface Product {
     id: string;
     count: number;
