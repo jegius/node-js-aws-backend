@@ -23,6 +23,11 @@ const serverlessConfiguration: Serverless = {
         region: 'eu-west-1',
         environment: {
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+            host: 'shop.cgelecue0dq7.eu-west-1.rds.amazonaws.com',
+            port: 5432,
+            database: 'shop',
+            user: 'postgres',
+            password: 'zOMgOkkNpswxYGAuRAv3'
         },
     },
     functions: {
@@ -43,7 +48,7 @@ const serverlessConfiguration: Serverless = {
             events: [
                 {
                     http: {
-                        method: 'put',
+                        method: 'post',
                         path: 'products/available',
                         cors: true,
                     }

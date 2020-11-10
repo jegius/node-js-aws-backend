@@ -9,3 +9,9 @@ export class ProductNotFound extends Error {
         super('Product not found!')
     }
 }
+
+export class InvalidProductData extends Error{
+    constructor() {
+        super('Provided incorrect product data!')
+    }
+}
