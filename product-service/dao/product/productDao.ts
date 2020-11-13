@@ -3,9 +3,9 @@ import {Client} from "pg";
 import {addProductQuery, getProductByIdQuery, getProductsQuery} from "./queries";
 
 class ProductDao extends DaoObject<Product> {
-    async add({count, description, price, title, imageUrl}: Product): Promise<Array<Product>> {
+    async add({count, description, price, title, imageurl}: Product): Promise<Array<Product>> {
         return this
-            .doRequest((client: Client) => client.query(addProductQuery, [description, price, title, imageUrl, count]));
+            .doRequest((client: Client) => client.query(addProductQuery, [description, price, title, imageurl, count]));
     }
 
     async getAll(): Promise<Array<Product>> {
@@ -20,4 +20,3 @@ class ProductDao extends DaoObject<Product> {
 }
 
 export const productDao = new ProductDao();
-

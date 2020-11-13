@@ -20,4 +20,3 @@ export const getAvailableProductByIdHandler: APIGatewayProxyHandler = async ({pa
             : buildResponse(error.message, ErrorCode.INTERNAL_SERVER_ERROR)
     }
 }
-
