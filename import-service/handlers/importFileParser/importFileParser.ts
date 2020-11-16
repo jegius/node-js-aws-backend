@@ -1,20 +1,22 @@
-import * as AWS from "aws-sdk";
-import {buildResponse, ErrorCode} from "../common/helpers";
-import * as csvParser from "csv-parser";
+import {S3} from 'aws-sdk';
+import {S3Handler} from "aws-lambda";
+import * as csv from 'csv-parser';
+import 'source-map-support/register';
 
-export const importFileParserHandler: any = async ({Records}) => {
+export const importFileParserHandler: S3Handler = async ({Records}) => {
     const {Bucket} = process.env;
-    const s3Instance = new AWS.S3({region: 'us-east-1'});
+    const s3Instance = new S3({region: 'us-east-1'});
 
+    console.log('bucket', Bucket)
     Records.forEach(record => {
         const Key = record.s3.object.key;
         const s3Stream = s3Instance.getObject({
             Bucket,
             Key
         }).createReadStream();
-
+        console.log('Key', Key)
         s3Stream
-            .pipe(csvParser())
+            .pipe(csv())
             .on('data', data => console.log(data))
             .on('end', async () => {
                 console.log(`Copy from ${Bucket}/${Key}`)
@@ -29,10 +31,4 @@ export const importFileParserHandler: any = async ({Records}) => {
                 console.log(`Copied into ${Bucket}/${targetKey}`)
             })
     })
-    try {
-        return buildResponse(null);
-    } catch (error) {
-        console.error(error);
-        return buildResponse(error.message, ErrorCode.BAD_REQUEST)
-    }
 }
