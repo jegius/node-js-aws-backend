@@ -20,16 +20,19 @@ const serverlessConfiguration: Serverless = {
         iamRoleStatements: [
             {
                 Effect: "Allow",
-                Action: "s3:ListBucket",
-                Resource: "arn:aws:s3:::node-aws-import-service"
+                Action: ["s3:uploadToBucket"],
+                Resource: ["arn:aws:s3:::node-aws-import-service"]
             },
             {
                 Effect: "Allow",
-                Action: "s3:*",
-                Resource: "arn:aws:s3:::node-aws-import-service/*"
+                Action: ["s3:*"],
+                Resource: ["arn:aws:s3:::node-aws-import-service/*"]
             }
         ],
         region: 'eu-west-1',
+        apiGateway: {
+            minimumCompressionSize: 1024,
+        },
         environment: {
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
             Bucket: 'node-aws-import-service',
@@ -66,7 +69,7 @@ const serverlessConfiguration: Serverless = {
                         rules: [
                             {
                                 prefix: 'uploaded/',
-                                suffix: '.csv'
+                                suffix: ''
                             }
                         ],
                         existing: true

@@ -5,16 +5,15 @@ import 'source-map-support/register';
 
 export const importFileParserHandler: S3Handler = async ({Records}) => {
     const {Bucket} = process.env;
-    const s3Instance = new S3({region: 'us-east-1'});
+    const s3Instance = new S3({region: 'eu-west-1'});
 
-    console.log('bucket', Bucket)
     Records.forEach(record => {
         const Key = record.s3.object.key;
         const s3Stream = s3Instance.getObject({
             Bucket,
             Key
         }).createReadStream();
-        console.log('Key', Key)
+
         s3Stream
             .pipe(csv())
             .on('data', data => console.log(data))
@@ -22,13 +21,22 @@ export const importFileParserHandler: S3Handler = async ({Records}) => {
                 console.log(`Copy from ${Bucket}/${Key}`)
 
                 const targetKey = Key.replace('uploaded', 'parsed');
-                await s3Instance.copyObject({
-                    Bucket,
-                    CopySource: `${Bucket}/${Key}`,
-                    Key: targetKey
-                }).promise();
+                await s3Instance
+                    .copyObject({
+                        Bucket,
+                        CopySource: `${Bucket}/${Key}`,
+                        Key: targetKey
+                    }).promise();
 
-                console.log(`Copied into ${Bucket}/${targetKey}`)
+                console.log(`Copied into ${Bucket}/${targetKey}`);
+
+                await s3Instance
+                    .deleteObject({
+                        Bucket,
+                        Key
+                    })
+                    .promise();
+
             })
     })
 }

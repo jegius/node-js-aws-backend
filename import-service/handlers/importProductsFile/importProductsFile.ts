@@ -11,7 +11,7 @@ export const importProductsFileHandler: any = async ({queryStringParameters: {na
                 Bucket,
                 Key: catalogPath,
                 Expires: 60,
-                ContentType: 'text/csv'
+                ContentType: encodeURIComponent('text/csv')
             }, (error, url) => !!error
             ? reject(error)
             : resolve({
