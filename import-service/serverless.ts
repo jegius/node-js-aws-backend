@@ -66,13 +66,13 @@ const serverlessConfiguration: Serverless = {
             SQSQueue: {
                 Type: 'AWS::SQS::Queue',
                 Properties: {
-                    QueueName: 'aws-sns-queue'
+                    QueueName: 'catalogItemsQueue'
                 }
             },
             SNSTopic: {
                 Type: 'AWS::SNS::Topic',
                 Properties: {
-                    TopicName: 'aws-sns-topic'
+                    TopicName: 'createProductTopic'
                 }
             },
             SNSSubscription: {
