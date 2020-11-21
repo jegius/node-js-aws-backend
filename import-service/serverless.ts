@@ -21,12 +21,28 @@ const serverlessConfiguration: Serverless = {
             {
                 Effect: "Allow",
                 Action: ["s3:uploadToBucket"],
-                Resource: ["arn:aws:s3:::node-aws-import-service"]
+                Resource: "arn:aws:s3:::node-aws-import-service"
             },
             {
                 Effect: "Allow",
                 Action: ["s3:*"],
-                Resource: ["arn:aws:s3:::node-aws-import-service/*"]
+                Resource: "arn:aws:s3:::node-aws-import-service/*"
+            },
+            {
+                Effect: "Allow",
+                Action: "sqs:*",
+                Resource: [
+                    {
+                        'Fn::GetAtt': ['SQSQueue', 'Arn']
+                    }
+                ]
+            },
+            {
+                Effect: "Allow",
+                Action: "sns:*",
+                Resource: {
+                    Ref: 'SNSTopic'
+                }
             }
         ],
         region: 'eu-west-1',
@@ -37,9 +53,54 @@ const serverlessConfiguration: Serverless = {
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
             Bucket: 'node-aws-import-service',
             Prefix: 'uploaded/',
+            SQS_URL: {
+                Ref: 'SQSQueue'
+            },
+            SNS_ARN: {
+                Ref: 'SNSTopic'
+            }
         },
     },
+    resources: {
+        Resources: {
+            SQSQueue: {
+                Type: 'AWS::SQS::Queue',
+                Properties: {
+                    QueueName: 'aws-sns-queue'
+                }
+            },
+            SNSTopic: {
+                Type: 'AWS::SNS::Topic',
+                Properties: {
+                    TopicName: 'aws-sns-topic'
+                }
+            },
+            SNSSubscription: {
+                Type: 'AWS::SNS::Subscription',
+                Properties: {
+                    Endpoint: 'jegius@gmail.com',
+                    Protocol: 'email',
+                    TopicArn: {
+                        Ref: 'SNSTopic'
+                    }
+                }
+            }
+        }
+    },
     functions: {
+        catalogBatchProcess: {
+            handler: 'handler.catalogBatchProcess',
+            events: [
+                {
+                    sqs: {
+                        batchSize: 5,
+                        arn: {
+                            'Fn::GetAtt': ['SQSQueue', 'Arn']
+                        }
+                    }
+                }
+            ]
+        },
         importProductsFile: {
             handler: 'handler.importProductsFile',
             events: [
