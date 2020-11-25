@@ -31,20 +31,10 @@ const serverlessConfiguration: Serverless = {
             {
                 Effect: "Allow",
                 Action: "sqs:*",
-                Resource: [
-                    {
-                        'Fn::GetAtt': ['SQSQueue', 'Arn']
-                    }
-                ]
-            },
-            {
-                Effect: "Allow",
-                Action: "sns:*",
-                Resource: {
-                    Ref: 'SNSTopic'
-                }
+                Resource: ['${cf:product-service-${self:provider.stage}.SQSQueueArn}']
             }
         ],
+        stage: 'dev',
         region: 'eu-west-1',
         apiGateway: {
             minimumCompressionSize: 1024,
@@ -53,54 +43,10 @@ const serverlessConfiguration: Serverless = {
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
             Bucket: 'node-aws-import-service',
             Prefix: 'uploaded/',
-            SQS_URL: {
-                Ref: 'SQSQueue'
-            },
-            SNS_ARN: {
-                Ref: 'SNSTopic'
-            }
+            SQS_URL: '${cf:product-service-${self:provider.stage}.SQSQueueUrl}',
         },
-    },
-    resources: {
-        Resources: {
-            SQSQueue: {
-                Type: 'AWS::SQS::Queue',
-                Properties: {
-                    QueueName: 'catalogItemsQueue'
-                }
-            },
-            SNSTopic: {
-                Type: 'AWS::SNS::Topic',
-                Properties: {
-                    TopicName: 'createProductTopic'
-                }
-            },
-            SNSSubscription: {
-                Type: 'AWS::SNS::Subscription',
-                Properties: {
-                    Endpoint: 'jegius@gmail.com',
-                    Protocol: 'email',
-                    TopicArn: {
-                        Ref: 'SNSTopic'
-                    }
-                }
-            }
-        }
     },
     functions: {
-        catalogBatchProcess: {
-            handler: 'handler.catalogBatchProcess',
-            events: [
-                {
-                    sqs: {
-                        batchSize: 5,
-                        arn: {
-                            'Fn::GetAtt': ['SQSQueue', 'Arn']
-                        }
-                    }
-                }
-            ]
-        },
         importProductsFile: {
             handler: 'handler.importProductsFile',
             events: [
