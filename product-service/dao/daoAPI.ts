@@ -1,9 +1,11 @@
 import {Client} from "pg";
 import {DatabaseError} from "../errors/errors";
 
-export interface Dao <T> {
+export interface Dao<T> {
     getById(id: string): Promise<Array<T>>;
+
     getAll(): Promise<Array<T>>;
+
     add(item: T): Promise<Array<T>>;
 }
 
@@ -12,7 +14,7 @@ export const emptyProduct = {
     description: '',
     price: 0,
     title: '',
-    imageUrl: ''
+    imageurl: ''
 }
 
 export interface Product {
@@ -21,11 +23,11 @@ export interface Product {
     description: string;
     price: number;
     title: string;
-    imageUrl: string;
+    imageurl: string;
 }
 
-export abstract class DaoObject<T> implements Dao<T>{
-    private readonly dbOptions =  {
+export abstract class DaoObject<T> implements Dao<T> {
+    private readonly dbOptions = {
         ...process.env,
         ssl: {
             rejectUnauthorized: false
@@ -34,7 +36,9 @@ export abstract class DaoObject<T> implements Dao<T>{
     }
 
     abstract add(item: T): Promise<Array<T>>;
+
     abstract getAll(): Promise<Array<T>>;
+
     abstract getById(id: string): Promise<Array<T>>;
 
     async doRequest(request: Function): Client {

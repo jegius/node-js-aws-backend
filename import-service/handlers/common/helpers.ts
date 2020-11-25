@@ -33,14 +33,3 @@ export function isRequestDataValid<T>(reference: T, target: T, dataValidation: (
 export function positiveOnly(value: any) {
     return typeof value === 'number' ? value >= 0 : true;
 }
-
-export function isRequestDataValid<T>(reference: T, target: T, dataValidation: (value: any) => boolean): boolean {
-    return Object
-        .keys(reference)
-        .map(key => typeof reference[key] === typeof target[key] && dataValidation(target[key]))
-        .every(result => result)
-}
-
-export function positiveOnly(value: any) {
-    return typeof value === 'number' ? value >= 0 : true;
-}

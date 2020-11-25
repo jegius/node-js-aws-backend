@@ -15,9 +15,3 @@ export class InvalidProductData extends Error{
         super('Provided incorrect product data!')
     }
 }
-
-export class InvalidProductData extends Error{
-    constructor() {
-        super('Provided incorrect product data!')
-    }
-}
