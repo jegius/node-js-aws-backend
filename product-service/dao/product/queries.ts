@@ -17,5 +17,4 @@ WITH product AS (
      )
 SELECT product.product_id as id, product.description, product.title, product.price, product.image_url as imageurl, stock.count
 FROM product join stock on stock.product_id = product.product_id
-
 `;

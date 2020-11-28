@@ -52,7 +52,7 @@ const serverlessConfiguration: Serverless = {
             events: [
                 {
                     http: {
-                        method: 'get',
+                        method: 'put',
                         path: 'import',
                         request: {
                             parameters: {
@@ -62,6 +62,13 @@ const serverlessConfiguration: Serverless = {
                             }
                         },
                         cors: true,
+                        authorizer: {
+                            name: 'authorization-service',
+                            arn: 'arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:basicAuthorizer',
+                            resultTtlInSeconds: 0,
+                            identitySource: 'method.request.header.Authorization',
+                            type: 'token'
+                        }
                     }
                 }
             ]
