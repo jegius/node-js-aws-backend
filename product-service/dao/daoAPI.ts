@@ -26,6 +26,7 @@ export interface Product {
     imageurl: string;
 }
 
+
 export abstract class DaoObject<T> implements Dao<T> {
     private readonly dbOptions = {
         ...process.env,
