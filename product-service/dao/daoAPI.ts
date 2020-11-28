@@ -54,6 +54,7 @@ export abstract class DaoObject<T> implements Dao<T> {
         } finally {
             client.end();
         }
+
     }
 
     private initClient(): Client {

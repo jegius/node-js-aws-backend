@@ -17,6 +17,26 @@ const serverlessConfiguration: Serverless = {
     provider: {
         name: 'aws',
         runtime: 'nodejs12.x',
+        iamRoleStatements: [
+            {
+                Effect: 'Allow',
+                Action: [
+                    'sqs:ReceiveMessage'
+                ],
+                Resource: [
+                    {
+                        'Fn::GetAtt': [ 'SQSQueue', 'Arn' ]
+                    }
+                ]
+            },
+            {
+                Effect: "Allow",
+                Action: "sns:*",
+                Resource: {
+                    Ref: 'SNSTopic'
+                }
+            }
+        ],
         apiGateway: {
             minimumCompressionSize: 1024,
         },
@@ -27,10 +47,77 @@ const serverlessConfiguration: Serverless = {
             port: 5432,
             database: 'shop',
             user: 'postgres',
-            password: ''
+            password: 'zOMgOkkNpswxYGAuRAv3',
+            SNS_ARN: {
+                Ref: 'SNSTopic'
+            }
         },
     },
+    resources: {
+        Resources: {
+            SQSQueue: {
+                Type: 'AWS::SQS::Queue',
+                Properties: {
+                    QueueName: 'catalogItemsQueueSecond',
+                },
+            },
+            SNSTopic: {
+                Type: 'AWS::SNS::Topic',
+                Properties: {
+                    TopicName: 'createProductTopicSecond'
+                }
+            },
+            SNSSubscription: {
+                Type: 'AWS::SNS::Subscription',
+                Properties: {
+                    Endpoint: 'jegius@gmail.com',
+                    Protocol: 'email',
+                    TopicArn: {
+                        Ref: 'SNSTopic'
+                    }
+                }
+            },
+            SNSSubscriptionBackup: {
+                Type: 'AWS::SNS::Subscription',
+                Properties: {
+                    Endpoint: 'jegius@gmail.com',
+                    Protocol: 'email',
+                    TopicArn: {
+                        Ref: 'SNSTopic'
+                    },
+                    FilterPolicy: {
+                        "topTier": ["Mighty"]
+                    }
+                }
+            }
+        },
+        Outputs: {
+            SQSQueueUrl: {
+                Value: {
+                    Ref: 'SQSQueue'
+                }
+            },
+            SQSQueueArn: {
+                Value: {
+                    'Fn::GetAtt': ['SQSQueue', 'Arn']
+                }
+            }
+        }
+    },
     functions: {
+        catalogBatchProcess: {
+            handler: 'handler.catalogBatchProcess',
+            events: [
+                {
+                    sqs: {
+                        batchSize: 5,
+                        arn: {
+                            'Fn::GetAtt': ['SQSQueue', 'Arn']
+                        }
+                    }
+                }
+            ]
+        },
         getAvailableProducts: {
             handler: 'handler.getAvailableProducts',
             events: [
