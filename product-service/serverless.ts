@@ -104,6 +104,7 @@ const serverlessConfiguration: Serverless = {
             }
         }
     },
+
     functions: {
         catalogBatchProcess: {
             handler: 'handler.catalogBatchProcess',
